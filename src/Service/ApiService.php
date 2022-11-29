@@ -23,11 +23,14 @@ class ApiService
         return $this->getApi('orders');
     }
 
-    public function orders_to_csv(): array
+    public function orders_to_csv()
     {
-        return $this->getApi('orderscsv');
+        return $this->getApi('orders');
     }
-
+    public function getContacts()
+    {
+        return $this->getApi('contacts');
+    }
     private function getApi(string $var)
     {
         $response = $this->client->request(
@@ -35,7 +38,7 @@ class ApiService
             'https://4ebb0152-1174-42f0-ba9b-4d6a69cf93be.mock.pstmn.io/' . $var
         );
 
-        return $response->toArray();
+        return $response->ToArray();
     }
 
 
