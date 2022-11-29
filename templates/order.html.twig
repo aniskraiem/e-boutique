@@ -8,9 +8,38 @@
 		<div class="container">
 
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+  {% for results1 in data['results'] %}
+ <tr>
+ <td>
+ <hr>
+  Amount:{{results1.Amount}}<br>
+    Currency:{{results1.Currency}}<br>
+    DeliverTo:{{results1.DeliverTo}}<br>
+    OrderID:{{results1.OrderID}}<br>
+    OrderNumber:{{results1.OrderNumber}}<br>
 
-				
-						{{ data }}
+SalesOrderLines:
+</td>
+<td>
+   {% for results2 in results1.SalesOrderLines['results'] %}
+
+    <ul>Amount:{{results2.Amount}}</ul>
+    <ul>Description:{{results2.Description}}</ul>
+    <ul>Discount:{{results2.Discount}}</ul>
+    <ul>Item:{{results2.Item}}</ul>
+    <ul>ItemDescription:{{results2.ItemDescription}}</ul>
+    <ul>Quantity:{{results2.Quantity}}</ul>
+    <ul>UnitCode:{{results2.UnitCode}}</ul>
+    <ul>UnitDescription:{{results2.UnitDescription}}</ul>
+    <ul>UnitPrice:{{results2.UnitPrice}}</ul>
+    <ul>VATAmount:{{results2.VATAmount}}</ul>
+    <ul>VATPercentage:{{results2.VATPercentage}}</ul>
+
+<hr>
+    {% endfor %}
+    </td>
+    </tr>
+    {% endfor %}
 
            </div>
 

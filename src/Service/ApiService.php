@@ -13,19 +13,17 @@ class ApiService
     {
         $this->client = $client->withOptions([
             
-            'headers' => ['X-api-key' => 'PMAK-62642462da39cd50e9ab4ea7-815e244f4fdea2d2075d8966cac3b7f10b',
-            'Content-Type: application/json',
-            'Accept: application/json']
+            'headers' => ['X-api-key' => 'PMAK-62642462da39cd50e9ab4ea7-815e244f4fdea2d2075d8966cac3b7f10b']
             
         ]);
     }
 
-    public function getOrders()
+    public function getOrders(): array
     {
         return $this->getApi('orders');
     }
 
-    public function orders_to_csv()
+    public function orders_to_csv(): array
     {
         return $this->getApi('orderscsv');
     }
@@ -36,8 +34,8 @@ class ApiService
             'GET',
             'https://4ebb0152-1174-42f0-ba9b-4d6a69cf93be.mock.pstmn.io/' . $var
         );
-        
-        return  $response->getContent();
+
+        return $response->toArray();
     }
 
 
