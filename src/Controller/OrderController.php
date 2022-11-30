@@ -113,7 +113,7 @@ class OrderController extends AbstractController
                         $em->persist($order);
                         $em->flush();
                        
-                        
+                        continue;
                       
 
                     }
@@ -125,7 +125,7 @@ class OrderController extends AbstractController
 
 
 
-        //On donne la variable en string à la response, nous définissons le code HTTP à 200
+      //  On donne la variable en string à la response, nous définissons le code HTTP à 200
         return new Response(
             
             $myVariableCSV,

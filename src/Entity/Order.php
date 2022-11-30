@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
@@ -24,6 +24,12 @@ class Order
      * @ORM\Column(type="string", length=255)
      */
     private $OrderNumber;
+
+      /**
+     * @Gedmo\Slug(fields={"OrderNumber"})
+     * @ORM\Column(length=128,unique=true)
+     */
+    private $slug;
 
     /**
      * @ORM\Column(type="integer")
@@ -80,6 +86,7 @@ class Order
      */
     private $adresse;
 
+  
     public function getId(): ?int
     {
         return $this->id;
@@ -240,4 +247,11 @@ class Order
 
         return $this;
     }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+   
 }
