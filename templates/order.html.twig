@@ -1,48 +1,63 @@
-{% extends 'base.html.twig' %}
 
-{% block title %}E-boutique
+{% block title %}Orders Traited
 {% endblock %}
 
 {% block body %}
+    <h1><center>Orders Traited</center></h1>
+
 	<div class="album py-5" id="france">
 		<div class="container">
 
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-  {% for results1 in data['results'] %}
- <tr>
- <td>
- <hr>
-  Amount:{{results1.Amount}}<br>
-    Currency:{{results1.Currency}}<br>
-    DeliverTo:{{results1.DeliverTo}}<br>
-    OrderID:{{results1.OrderID}}<br>
-    OrderNumber:{{results1.OrderNumber}}<br>
+     
+<table class="table table-dark">
+  <thead>
+    <tr>
+     <th>orderId</th>
+            <th>Account Name</th>
+            <th>Adress</th>
+            <th>Country</th>
+            <th>ZipCode</th>
+            <th>City</th>
+            <th>Item Count</th>
+            <th>Item Index</th>
+            <th>Item Id</th>
+            <th>Item Quantity</th>
+            <th>Price without tax</th>
+            <th>Price with tax</th>
 
-SalesOrderLines:
-</td>
-<td>
-   {% for results2 in results1.SalesOrderLines['results'] %}
-
-    <ul>Amount:{{results2.Amount}}</ul>
-    <ul>Description:{{results2.Description}}</ul>
-    <ul>Discount:{{results2.Discount}}</ul>
-    <ul>Item:{{results2.Item}}</ul>
-    <ul>ItemDescription:{{results2.ItemDescription}}</ul>
-    <ul>Quantity:{{results2.Quantity}}</ul>
-    <ul>UnitCode:{{results2.UnitCode}}</ul>
-    <ul>UnitDescription:{{results2.UnitDescription}}</ul>
-    <ul>UnitPrice:{{results2.UnitPrice}}</ul>
-    <ul>VATAmount:{{results2.VATAmount}}</ul>
-    <ul>VATPercentage:{{results2.VATPercentage}}</ul>
-
-<hr>
-
-    {% endfor %}
-    </td>
     </tr>
-    {% endfor %}
+  </thead>
+  <tbody>
+   {% for order in order %}
+            <tr>
+              <td>{{order.orderNumber}}</td>
+<td>{{order.accountName}}</td>
+<td>{{order.adresse}}</td>
+<td>{{order.pays}}</td>
+<td>{{order.zipcode}}</td>
+<td>{{order.ville}}</td>
+<td>{{order.itemcount}}</td>
+<td>{{order.itemindex}}</td>
+<td>{{order.itemid}}</td>
+<td>{{order.itemquantity}}</td>
+<td>{{order.prixhtva}}</td>
+<td>{{order.prixtva}}</td>
 
-           </div>
 
-	
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+   
+  </tbody>
+</table>
+           <a href="{{ path('OrdersToCsv') }}">CSV File</a>
+
+    </div>
+	 <div class="mt-5">
+        {{ knp_pagination_render(order, 'pagination.html.twig') }}
+    </div>
 {% endblock %}

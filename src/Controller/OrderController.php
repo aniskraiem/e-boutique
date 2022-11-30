@@ -2,12 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Avis;
-use App\Entity\Commentaire;
-use App\Entity\User;
-use App\Form\AvisType;
-use App\Form\CommentaireType;
-use App\Repository\AvisRepository;
+use App\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,16 +20,16 @@ class OrderController extends AbstractController
      * @Route("/orders", name="orders", methods={"GET"})
      */
 
-    public function fetchOrders(ApiService $ApiService): Response
+    public function index(Request $request, PaginatorInterface $paginator): Response
     {
-        //        dd($ApiService->getOrders());
-        $response = $this->render('order.html.twig', [
-            'data' => $ApiService->getOrders(),
+        $order = $this->getDoctrine()->getRepository(Order::class)->findAll();
+
+        return $this->render('order.html.twig', [
+            'totalOrders' => count($order),
+            'order' => $paginator->paginate($order,
+                $request->query->getInt('page', 1), 5
+            ),
         ]);
-
-        $response->setSharedMaxAge(3600);
-
-        return $response;
     }
 
     /**
@@ -54,13 +49,12 @@ class OrderController extends AbstractController
 
         $orders = $ApiService->getOrders();
         $contacts = $ApiService->getContacts();
-
+        $order = new Order();
         foreach ($orders['results'] as $o) {
             $myVariableCSV .= "\n order: ";
 
             $myVariableCSV .= $o['OrderNumber'];
-
-
+           
             foreach ($contacts['results'] as $c) {
 
 
@@ -80,12 +74,13 @@ class OrderController extends AbstractController
 
                     $myVariableCSV .= "\n delivery_city: ";
                     $myVariableCSV .= $c['City'];
+                  
 
                     $myVariableCSV .= "\n item_count: ";
                     $myVariableCSV .= count($o['SalesOrderLines']['results']);
 
                     foreach ($o['SalesOrderLines']['results'] as $s) {
-
+                       
                         $myVariableCSV .= "\n item_index: ";
                         $myVariableCSV .= $s['Description'];
 
@@ -100,17 +95,39 @@ class OrderController extends AbstractController
 
                         $myVariableCSV .= "\n line_price_incl_vat: ";
                         $myVariableCSV .= $s['Amount'] + $s['VATAmount'];
+                        
+                        $order->setOrderNumber($o['OrderNumber']);
+                        $order->setItemcount(count($o['SalesOrderLines']['results']));
+
+                        $order->setAccountName($c['AccountName']);
+                        $order->setAdresse($c['AddressLine1']);
+                        $order->setPays($c['Country']);
+                        $order->setZipcode($c['ZipCode']);
+                        $order->setVille($c['City']);
+                        $order->setItemIndex($s['Description']);
+                        $order->setItemId($s['Item']);
+                        $order->setItemQuantity($s['Quantity']);
+                        $order->setPrixHTVA($s['Amount']);
+                        $order->setPrixTVA($s['Amount'] + $s['VATAmount']);
+                        $em = $this->getDoctrine()->getManager();
+                        $em->persist($order);
+                        $em->flush();
+                       
+                        
+                      
 
                     }
                 }
             }
 
         }
+        
 
-        //Si l'on souhaite ajouter un espace
+
 
         //On donne la variable en string à la response, nous définissons le code HTTP à 200
         return new Response(
+            
             $myVariableCSV,
             200,
             [
@@ -121,6 +138,8 @@ class OrderController extends AbstractController
             ],
 
         );
+        return $this->redirect('/orders');
+
     }
 
 
