@@ -22,12 +22,16 @@ class OrderController extends AbstractController
 
     public function index(Request $request, PaginatorInterface $paginator): Response
     {
+        //récupérer les données de la base de données
         $order = $this->getDoctrine()->getRepository(Order::class)->findAll();
 
+        //rendre la page order.html.twig pour afficher les données reçues
         return $this->render('order.html.twig', [
             'totalOrders' => count($order),
-            'order' => $paginator->paginate($order,
-                $request->query->getInt('page', 1), 5
+            'order' => $paginator->paginate(
+                $order,
+                    $request->query->getInt('page', 1),
+                5
             ),
         ]);
     }
@@ -44,21 +48,31 @@ class OrderController extends AbstractController
         //    $myVariableCSV = "order:  delivery_name: delivery_address:  delivery_country:  delivery_zipcode:  delivery_city:  items_count:  item_index:  item_id:  item_quantity:  line_price_excl_vat:  line_price_incl_vat:\n";
 
 
-        //Ajout de données (avec le . devant pour ajouter les données à la variable existante)
+        //initialiser dans la variable $orders les données récupérées
+        $orders = $ApiService->getOrders();
+
+        //initialiser dans la variable $contacts les données récupérées
+        $contacts = $ApiService->getContacts();
+
+
+        $order = new Order();
+
+        //initialiser la variable 
         $myVariableCSV = " ";
 
-        $orders = $ApiService->getOrders();
-        $contacts = $ApiService->getContacts();
-        $order = new Order();
         foreach ($orders['results'] as $o) {
+            //Ajout de données (avec le . devant pour ajouter les données à la variable existante)
+
             $myVariableCSV .= "\n order: ";
 
             $myVariableCSV .= $o['OrderNumber'];
-           
+
             foreach ($contacts['results'] as $c) {
 
 
                 if ($c['ID'] == $o['DeliverTo']) {
+
+                    //Ajout de données au fichier CSV
 
                     $myVariableCSV .= "\n delivery_name: ";
                     $myVariableCSV .= $c['AccountName'];
@@ -74,13 +88,13 @@ class OrderController extends AbstractController
 
                     $myVariableCSV .= "\n delivery_city: ";
                     $myVariableCSV .= $c['City'];
-                  
+
 
                     $myVariableCSV .= "\n item_count: ";
                     $myVariableCSV .= count($o['SalesOrderLines']['results']);
 
                     foreach ($o['SalesOrderLines']['results'] as $s) {
-                       
+
                         $myVariableCSV .= "\n item_index: ";
                         $myVariableCSV .= $s['Description'];
 
@@ -95,7 +109,9 @@ class OrderController extends AbstractController
 
                         $myVariableCSV .= "\n line_price_incl_vat: ";
                         $myVariableCSV .= $s['Amount'] + $s['VATAmount'];
-                        
+
+
+                        //définir les données 
                         $order->setOrderNumber($o['OrderNumber']);
                         $order->setItemcount(count($o['SalesOrderLines']['results']));
 
@@ -110,24 +126,27 @@ class OrderController extends AbstractController
                         $order->setPrixHTVA($s['Amount']);
                         $order->setPrixTVA($s['Amount'] + $s['VATAmount']);
                         $em = $this->getDoctrine()->getManager();
+
+                        // dites à Doctrine que vous voulez  enregistrer le Order 
                         $em->persist($order);
+
+                        // exécute réellement les requêtes 
                         $em->flush();
-                       
+
                         continue;
-                      
+
 
                     }
                 }
             }
 
         }
-        
 
 
 
-      //  On donne la variable en string à la response, nous définissons le code HTTP à 200
+
+        //  On donne la variable en string à la response, nous définissons le code HTTP à 200
         return new Response(
-            
             $myVariableCSV,
             200,
             [
