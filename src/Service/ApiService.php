@@ -27,7 +27,7 @@ class ApiService
 
        //récupérer les données  des contacts en prend comme route orders qui remplacent la variable var dans la fonction gets API
 
-    public function getContacts()
+    public function getContacts():array
     {
         return $this->getApi('contacts');
     }
@@ -37,7 +37,7 @@ class ApiService
     {
         $response = $this->client->request(
             'GET',
-            'https://4ebb0152-1174-42f0-ba9b-4d6a69cf93be.mock.pstmn.io/' . $var
+            'https://internshipapi-pylfsebcoa-ew.a.run.app/' . $var
         );
 
         return $response->ToArray();

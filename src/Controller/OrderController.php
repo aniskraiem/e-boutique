@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Articles;
+use App\Entity\Contacts;
 use App\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -30,7 +32,7 @@ class OrderController extends AbstractController
             'totalOrders' => count($order),
             'order' => $paginator->paginate(
                 $order,
-                    $request->query->getInt('page', 1),
+                $request->query->getInt('page', 1),
                 5
             ),
         ]);
@@ -55,8 +57,7 @@ class OrderController extends AbstractController
         $contacts = $ApiService->getContacts();
 
 
-        $order = new Order();
-
+      
         //initialiser la variable 
         $myVariableCSV = " ";
 
@@ -68,7 +69,24 @@ class OrderController extends AbstractController
             $myVariableCSV .= $o['OrderNumber'];
 
             foreach ($contacts['results'] as $c) {
+                $contact = new Contacts();
 
+                $contact->setAccountID($c['ID']);
+                $contact->setAccountName($c['AccountName']);
+                $contact->setAddressLine1($c['AddressLine1']);
+                $contact->setCity($c['City']);
+                $contact->setContactName($c['ContactName']);
+                $contact->setCountry($c['Country']);
+                $contact->setZipCode($c['ZipCode']);
+    
+    
+                $em = $this->getDoctrine()->getManager();
+    
+                // dites à Doctrine que vous voulez  enregistrer le Order 
+                $em->persist($contact);
+    
+                // exécute réellement les requêtes 
+                $em->flush();
 
                 if ($c['ID'] == $o['DeliverTo']) {
 
@@ -94,7 +112,29 @@ class OrderController extends AbstractController
                     $myVariableCSV .= count($o['SalesOrderLines']['results']);
 
                     foreach ($o['SalesOrderLines']['results'] as $s) {
+                        $article = new Articles();
 
+                        $article->setAmount($s['Amount']);
+                        $article->setDescription($s['Description']);
+                        $article->setDiscount($s['Discount']);
+                        $article->setItem($s['Item']);
+                        $article->setItemDescription($s['ItemDescription']);
+                        $article->setQuantity($s['Quantity']);
+                        $article->setUnitCode($s['UnitCode']);
+                        $article->setUnitDescriptions($s['UnitDescription']);
+                        $article->setUnitPrice($s['UnitPrice']);
+                        $article->setVATAmount($s['VATAmount']);
+                        $article->setVATPercentage($s['VATPercentage']);
+
+            
+            
+                        $em = $this->getDoctrine()->getManager();
+            
+                        // dites à Doctrine que vous voulez  enregistrer le Order 
+                        $em->persist($article);
+            
+                        // exécute réellement les requêtes 
+                        $em->flush();
                         $myVariableCSV .= "\n item_index: ";
                         $myVariableCSV .= $s['Description'];
 
@@ -110,6 +150,8 @@ class OrderController extends AbstractController
                         $myVariableCSV .= "\n line_price_incl_vat: ";
                         $myVariableCSV .= $s['Amount'] + $s['VATAmount'];
 
+                        $order= new Order();
+                
 
                         //définir les données 
                         $order->setOrderNumber($o['OrderNumber']);
@@ -118,13 +160,18 @@ class OrderController extends AbstractController
                         $order->setAccountName($c['AccountName']);
                         $order->setAdresse($c['AddressLine1']);
                         $order->setPays($c['Country']);
+                        $order->setAdresse($c['AddressLine1']);
+                        $order->setItemIndex($s['Description']);
                         $order->setZipcode($c['ZipCode']);
                         $order->setVille($c['City']);
-                        $order->setItemIndex($s['Description']);
                         $order->setItemId($s['Item']);
                         $order->setItemQuantity($s['Quantity']);
                         $order->setPrixHTVA($s['Amount']);
                         $order->setPrixTVA($s['Amount'] + $s['VATAmount']);
+
+                      
+
+
                         $em = $this->getDoctrine()->getManager();
 
                         // dites à Doctrine que vous voulez  enregistrer le Order 
@@ -133,7 +180,6 @@ class OrderController extends AbstractController
                         // exécute réellement les requêtes 
                         $em->flush();
 
-                        continue;
 
 
                     }
@@ -143,7 +189,7 @@ class OrderController extends AbstractController
         }
 
 
-
+        
 
         //  On donne la variable en string à la response, nous définissons le code HTTP à 200
         return new Response(
@@ -157,6 +203,14 @@ class OrderController extends AbstractController
             ],
 
         );
+
+
+
+
+
+
+
+
         return $this->redirect('/orders');
 
     }

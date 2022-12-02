@@ -1,0 +1,57 @@
+{% extends  'base-back.html.twig'%}
+
+{% block title %}Articles index{% endblock %}
+
+{% block body %}
+    <h1>Articles </h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Discount</th>
+                <th>Item</th>
+                <th>ItemDescription</th>
+                <th>Quantity</th>
+                <th>UnitCode</th>
+                <th>UnitDescriptions</th>
+                <th>UnitPrice</th>
+                <th>VATAmount</th>
+                <th>VATPercentage</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for article in articles %}
+            <tr>
+                <td>{{ article.id }}</td>
+                <td>{{ article.Amount }}</td>
+                <td>{{ article.Description }}</td>
+                <td>{{ article.Discount }}</td>
+                <td>{{ article.Item }}</td>
+                <td>{{ article.ItemDescription }}</td>
+                <td>{{ article.Quantity }}</td>
+                <td>{{ article.UnitCode }}</td>
+                <td>{{ article.UnitDescriptions }}</td>
+                <td>{{ article.UnitPrice }}</td>
+                <td>{{ article.VATAmount }}</td>
+                <td>{{ article.VATPercentage }}</td>
+                <td>
+                    <a href="{{ path('app_articles_show', {'id': article.id}) }}">show</a>
+                    <a href="{{ path('app_articles_edit', {'id': article.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+ <div class="mt-5">
+        {{ knp_pagination_render(articles, 'pagination.html.twig') }}
+    </div>
+    <a href="{{ path('app_articles_new') }}">Create new</a>
+{% endblock %}
