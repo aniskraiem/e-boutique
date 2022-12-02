@@ -28,7 +28,7 @@ class OrderController extends AbstractController
         $order = $this->getDoctrine()->getRepository(Order::class)->findAll();
 
         //rendre la page order.html.twig pour afficher les données reçues
-        return $this->render('order.html.twig', [
+        return $this->render('orders/order.html.twig', [
             'totalOrders' => count($order),
             'order' => $paginator->paginate(
                 $order,
@@ -47,8 +47,8 @@ class OrderController extends AbstractController
         // le \n à la fin permets de faire un saut de ligne, super important en CSV
         // le point virgule sépare les données en colonnes
 
-        //    $myVariableCSV = "order:  delivery_name: delivery_address:  delivery_country:  delivery_zipcode:  delivery_city:  items_count:  item_index:  item_id:  item_quantity:  line_price_excl_vat:  line_price_incl_vat:\n";
-
+        //initialiser la variable 
+        $myVariableCSV = " ";
 
         //initialiser dans la variable $orders les données récupérées
         $orders = $ApiService->getOrders();
@@ -57,11 +57,12 @@ class OrderController extends AbstractController
         $contacts = $ApiService->getContacts();
 
 
-      
-        //initialiser la variable 
-        $myVariableCSV = " ";
+
 
         foreach ($orders['results'] as $o) {
+
+     
+            //    $myVariableCSV = "order:  delivery_name: delivery_address:  delivery_country:  delivery_zipcode:  delivery_city:  items_count:  item_index:  item_id:  item_quantity:  line_price_excl_vat:  line_price_incl_vat:\n";
             //Ajout de données (avec le . devant pour ajouter les données à la variable existante)
 
             $myVariableCSV .= "\n order: ";
@@ -78,13 +79,13 @@ class OrderController extends AbstractController
                 $contact->setContactName($c['ContactName']);
                 $contact->setCountry($c['Country']);
                 $contact->setZipCode($c['ZipCode']);
-    
-    
+
+
                 $em = $this->getDoctrine()->getManager();
-    
+
                 // dites à Doctrine que vous voulez  enregistrer les contacts 
                 $em->persist($contact);
-    
+
                 // exécute réellement les requêtes 
                 $em->flush();
 
@@ -126,13 +127,13 @@ class OrderController extends AbstractController
                         $article->setVATAmount($s['VATAmount']);
                         $article->setVATPercentage($s['VATPercentage']);
 
-            
-            
+
+
                         $em = $this->getDoctrine()->getManager();
-            
+
                         // dites à Doctrine que vous voulez  enregistrer les articles 
                         $em->persist($article);
-            
+
                         // exécute réellement les requêtes 
                         $em->flush();
                         $myVariableCSV .= "\n item_index: ";
@@ -150,8 +151,8 @@ class OrderController extends AbstractController
                         $myVariableCSV .= "\n line_price_incl_vat: ";
                         $myVariableCSV .= $s['Amount'] + $s['VATAmount'];
 
-                        $order= new Order();
-                
+                        $order = new Order();
+
 
                         //définir les données 
                         $order->setOrderNumber($o['OrderNumber']);
@@ -169,7 +170,7 @@ class OrderController extends AbstractController
                         $order->setPrixHTVA($s['Amount']);
                         $order->setPrixTVA($s['Amount'] + $s['VATAmount']);
 
-                      
+
 
 
                         $em = $this->getDoctrine()->getManager();
@@ -189,7 +190,7 @@ class OrderController extends AbstractController
         }
 
 
-        
+
 
         //  On donne la variable en string à la response, nous définissons le code HTTP à 200
         return new Response(
