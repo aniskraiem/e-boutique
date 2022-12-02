@@ -82,7 +82,7 @@ class OrderController extends AbstractController
     
                 $em = $this->getDoctrine()->getManager();
     
-                // dites à Doctrine que vous voulez  enregistrer le Order 
+                // dites à Doctrine que vous voulez  enregistrer les contacts 
                 $em->persist($contact);
     
                 // exécute réellement les requêtes 
@@ -130,7 +130,7 @@ class OrderController extends AbstractController
             
                         $em = $this->getDoctrine()->getManager();
             
-                        // dites à Doctrine que vous voulez  enregistrer le Order 
+                        // dites à Doctrine que vous voulez  enregistrer les articles 
                         $em->persist($article);
             
                         // exécute réellement les requêtes 
@@ -174,7 +174,7 @@ class OrderController extends AbstractController
 
                         $em = $this->getDoctrine()->getManager();
 
-                        // dites à Doctrine que vous voulez  enregistrer le Order 
+                        // dites à Doctrine que vous voulez  enregistrer les orders 
                         $em->persist($order);
 
                         // exécute réellement les requêtes 
